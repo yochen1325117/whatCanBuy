@@ -1,0 +1,12 @@
+{
+  "generatedAt": "尚未更新",
+  "source": "scripts/fetch-twse-data.ts",
+  "indices": [
+    {
+      "name": "TAIEX",
+      "value": 0,
+      "change": 0,
+      "changePercent": 0
+    }
+  ]
+}
