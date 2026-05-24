@@ -1,32 +1,89 @@
 # What Can Buy
 
-What Can Buy 是一個 Vite React TypeScript 專案，用來呈現台股資料儀表板。
+What Can Buy is a Vite React TypeScript dashboard for browsing Taiwan stock
+market data. GitHub Actions can refresh the generated JSON data, and GitHub
+Pages can publish the built dashboard.
 
-這個專案的目標是透過 GitHub Actions 定期抓取台股資料，將整理後的 JSON
-資料輸出到 `public/data/`，再由 GitHub Pages 部署前端儀表板。
+## Local Development
 
-## Project Structure
+Install Node dependencies:
 
-```text
-src/                 React application source
-scripts/             Data fetching and data preparation scripts
-public/data/         Generated stock market JSON data
-.github/workflows/   GitHub Actions for data refresh and Pages deploy
+```bash
+npm install
 ```
 
-## Scripts
+Start the Vite development server:
 
 ```bash
 npm run dev
-npm run build
-npm run fetch:stocks
 ```
+
+Build the production app:
+
+```bash
+npm run build
+```
+
+## Manual Data Fetch
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Fetch the latest stock data:
+
+```bash
+python scripts/fetch_stock.py
+```
+
+The script writes the normalized data to `public/data/latest.json`.
 
 ## GitHub Actions
 
-- `fetch-stock-data.yml` 會在交易日排程執行資料抓取腳本，更新
-  `public/data/tw-stock-summary.json`。
-- `deploy-pages.yml` 會在 `main` 更新時建置 Vite app，並部署到 GitHub Pages。
+- `.github/workflows/update-data.yml`
+  - Runs every day at UTC 00:00, which is Taiwan time 08:00.
+  - Can also be started manually with `workflow_dispatch`.
+  - Installs Python dependencies, runs `scripts/fetch_stock.py`, and commits
+    `public/data/latest.json` when the data changes.
+- `.github/workflows/deploy-pages.yml`
+  - Runs when `main` receives a push.
+  - Installs Node.js dependencies with `npm ci`.
+  - Builds the app with `npm run build`.
+  - Deploys the generated `dist/` directory to GitHub Pages using the official
+    GitHub Pages Actions.
 
-目前 `scripts/fetch-twse-data.ts` 先放入資料輸出骨架，後續可以接上 TWSE/TPEX
-資料來源與欄位轉換邏輯。
+## GitHub Pages Setup
+
+In the GitHub repository:
+
+1. Open Repository Settings.
+2. Go to Pages.
+3. Set Source to GitHub Actions.
+4. Save the setting.
+
+After this, pushes to `main` will trigger `.github/workflows/deploy-pages.yml`
+and publish the dashboard.
+
+## Data Sources
+
+The data fetcher uses official public data endpoints first:
+
+- TWSE listed stock data: `https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX`
+- TPEx OTC stock data:
+  `https://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php`
+
+Each stock record in `public/data/latest.json` includes:
+
+- `market`
+- `code`
+- `name`
+- `close`
+- `change`
+- `changePercent`
+- `volume`
+- `date`
+
+If a field cannot be parsed from the source data, the fetcher writes `null`
+instead of failing the whole run.
