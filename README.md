@@ -43,11 +43,10 @@ The script writes the normalized data to `public/data/latest.json`.
 ## GitHub Actions
 
 - `.github/workflows/update-data.yml`
-  - Runs on weekdays at UTC 09:30, which is Taiwan time 17:30.
+  - Runs every day at UTC 00:00, which is Taiwan time 08:00.
   - Can also be started manually with `workflow_dispatch`.
   - Installs Python dependencies, runs `scripts/fetch_stock.py`, and commits
     `public/data/latest.json` when the data changes.
-  - Triggers `.github/workflows/deploy-pages.yml` after committing updated data.
 - `.github/workflows/deploy-pages.yml`
   - Runs when `main` receives a push.
   - Can also be started manually with `workflow_dispatch`.
