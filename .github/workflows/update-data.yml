@@ -2,10 +2,8 @@ name: Update stock data
 
 on:
   schedule:
-    # UTC 00:00 = Taiwan 08:00
-    - cron: "0 0 * * *"
-    # UTC 07:00 = Taiwan 15:00
-    - cron: "0 7 * * *"
+    # Run every 5 minutes for GitHub Actions schedule testing.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
