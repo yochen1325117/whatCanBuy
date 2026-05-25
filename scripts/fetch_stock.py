@@ -44,15 +44,19 @@ class FetchResult:
     source_date: str | None
 
 
-def today_taipei() -> date:
+def now_taipei() -> datetime:
     if ZoneInfo is None:
-        logger.warning("zoneinfo is unavailable; falling back to local system date")
-        return date.today()
+        logger.warning("zoneinfo is unavailable; falling back to UTC+08:00")
+        return datetime.now(timezone(timedelta(hours=8)))
     try:
-        return datetime.now(ZoneInfo("Asia/Taipei")).date()
+        return datetime.now(ZoneInfo("Asia/Taipei"))
     except ZoneInfoNotFoundError:
-        logger.warning("Asia/Taipei timezone data is unavailable; falling back to local system date")
-        return date.today()
+        logger.warning("Asia/Taipei timezone data is unavailable; falling back to UTC+08:00")
+        return datetime.now(timezone(timedelta(hours=8)))
+
+
+def today_taipei() -> date:
+    return now_taipei().date()
 
 
 def strip_markup(value: Any) -> str:
@@ -287,10 +291,18 @@ def fetch_latest(fetcher: Any, market: str, start_date: date) -> FetchResult:
     return FetchResult(records=[], source_date=None)
 
 
+def latest_data_date(source_dates: dict[str, str | None]) -> str | None:
+    dates = [value for value in source_dates.values() if value]
+    return max(dates) if dates else None
+
+
 def write_latest(records: list[dict[str, Any]], source_dates: dict[str, str | None]) -> None:
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    updated_at = now_taipei().isoformat()
     payload = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "updatedAt": updated_at,
+        "dataDate": latest_data_date(source_dates),
         "sources": {
             "TWSE": TWSE_URL,
             "TPEX": TPEX_URL,

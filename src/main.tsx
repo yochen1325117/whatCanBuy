@@ -15,6 +15,8 @@ type StockRecord = {
 
 type LatestData = {
   generatedAt?: string;
+  updatedAt?: string;
+  dataDate?: string;
   count?: number;
   data?: StockRecord[];
 };
@@ -22,7 +24,12 @@ type LatestData = {
 type LoadState =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; stocks: StockRecord[]; generatedAt: string | null };
+  | {
+      status: "ready";
+      stocks: StockRecord[];
+      updatedAt: string | null;
+      dataDate: string | null;
+    };
 
 const numberFormatter = new Intl.NumberFormat("zh-TW");
 const priceFormatter = new Intl.NumberFormat("zh-TW", {
@@ -99,7 +106,8 @@ function App() {
         setState({
           status: "ready",
           stocks: Array.isArray(payload.data) ? payload.data : [],
-          generatedAt: payload.generatedAt ?? null,
+          updatedAt: payload.updatedAt ?? payload.generatedAt ?? null,
+          dataDate: payload.dataDate ?? null,
         });
       } catch (error) {
         if (controller.signal.aborted) {
@@ -143,7 +151,8 @@ function App() {
           {state.status === "ready" ? (
             <div className="header-meta" aria-label="資料摘要">
               <span>{formatNumber(state.stocks.length)} 檔證券</span>
-              <span>更新：{formatDateTime(state.generatedAt)}</span>
+              <span>最後更新時間：{formatDateTime(state.updatedAt)}</span>
+              <span>資料日期：{state.dataDate ?? "-"}</span>
             </div>
           ) : null}
         </header>

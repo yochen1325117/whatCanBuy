@@ -43,7 +43,8 @@ The script writes the normalized data to `public/data/latest.json`.
 ## GitHub Actions
 
 - `.github/workflows/update-data.yml`
-  - Runs every day at UTC 00:00, which is Taiwan time 08:00.
+  - Runs every day at UTC 00:00 and UTC 07:00, which is Taiwan time 08:00
+    and 15:00.
   - Can also be started manually with `workflow_dispatch`.
   - Installs Python dependencies, runs `scripts/fetch_stock.py`, and commits
     `public/data/latest.json` when the data changes.
@@ -64,8 +65,8 @@ In the GitHub repository:
 3. Set Source to GitHub Actions.
 4. Save the setting.
 
-After this, pushes to `main` will trigger `.github/workflows/deploy-pages.yml`
-and publish the dashboard.
+After this, successful data update runs and manual deploy runs will publish the
+dashboard.
 
 ## Data Sources
 
@@ -85,6 +86,9 @@ Each stock record in `public/data/latest.json` includes:
 - `changePercent`
 - `volume`
 - `date`
+
+The top-level data payload also includes `updatedAt` in Taiwan time and
+`dataDate` for the stock data date.
 
 If a field cannot be parsed from the source data, the fetcher writes `null`
 instead of failing the whole run.
