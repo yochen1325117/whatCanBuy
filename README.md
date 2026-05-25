@@ -48,9 +48,8 @@ The script writes the normalized data to `public/data/latest.json`.
   - Can also be started manually with `workflow_dispatch`.
   - Installs Python dependencies, runs `scripts/fetch_stock.py`, and commits
     `public/data/latest.json` when the data changes.
-  - Triggers `.github/workflows/deploy-pages.yml` after committing updated data.
 - `.github/workflows/deploy-pages.yml`
-  - Runs when `main` receives a push.
+  - Runs after `.github/workflows/update-data.yml` completes successfully.
   - Can also be started manually with `workflow_dispatch`.
   - Installs Node.js dependencies with `npm ci`.
   - Builds the app with `npm run build`.
@@ -66,8 +65,8 @@ In the GitHub repository:
 3. Set Source to GitHub Actions.
 4. Save the setting.
 
-After this, pushes to `main` will trigger `.github/workflows/deploy-pages.yml`
-and publish the dashboard.
+After this, successful data update runs and manual deploy runs will publish the
+dashboard.
 
 ## Data Sources
 
