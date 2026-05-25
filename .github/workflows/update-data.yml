@@ -2,7 +2,10 @@ name: Update stock data
 
 on:
   schedule:
-    - cron: "30 9 * * 1-5"
+    # UTC 00:00 = Taiwan 08:00
+    - cron: "0 0 * * *"
+    # UTC 07:00 = Taiwan 15:00
+    - cron: "0 7 * * *"
   workflow_dispatch:
 
 permissions:
