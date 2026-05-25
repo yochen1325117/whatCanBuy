@@ -2,10 +2,11 @@ name: Update stock data
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "30 9 * * 1-5"
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 jobs:
@@ -27,8 +28,10 @@ jobs:
         run: python scripts/fetch_stock.py
 
       - name: Commit and push latest data
+        id: commit-data
         run: |
           if git diff --quiet -- public/data/latest.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No stock data changes to commit."
             exit 0
           fi
@@ -38,3 +41,10 @@ jobs:
           git add public/data/latest.json
           git commit -m "chore: update stock data"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger GitHub Pages deploy
+        if: steps.commit-data.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref main
