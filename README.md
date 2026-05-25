@@ -48,7 +48,7 @@ The script writes the normalized data to `public/data/latest.json`.
   - Installs Python dependencies, runs `scripts/fetch_stock.py`, and commits
     `public/data/latest.json` when the data changes.
 - `.github/workflows/deploy-pages.yml`
-  - Runs when `main` receives a push.
+  - Runs after `.github/workflows/update-data.yml` completes successfully.
   - Can also be started manually with `workflow_dispatch`.
   - Installs Node.js dependencies with `npm ci`.
   - Builds the app with `npm run build`.
