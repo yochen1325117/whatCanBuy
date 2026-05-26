@@ -45,7 +45,7 @@ type SortDirection = "asc" | "desc";
 type SortState = {
   key: SortKey;
   direction: SortDirection;
-};
+} | null;
 
 const numberFormatter = new Intl.NumberFormat("zh-TW");
 const priceFormatter = new Intl.NumberFormat("zh-TW", {
@@ -119,7 +119,7 @@ function changeClass(value: number | null | undefined) {
   return value > 0 ? "positive" : "negative";
 }
 
-function compareText(a: string | null, b: string | null) {
+function compareNullable(a: string | number | null, b: string | number | null) {
   if (a == null && b == null) {
     return 0;
   }
@@ -130,6 +130,19 @@ function compareText(a: string | null, b: string | null) {
 
   if (b == null) {
     return -1;
+  }
+
+  return null;
+}
+
+function compareText(a: string | null, b: string | null) {
+  const nullableResult = compareNullable(a, b);
+  if (nullableResult != null) {
+    return nullableResult;
+  }
+
+  if (a == null || b == null) {
+    return 0;
   }
 
   return a.localeCompare(b, "zh-Hant", {
@@ -139,22 +152,26 @@ function compareText(a: string | null, b: string | null) {
 }
 
 function compareNumber(a: number | null, b: number | null) {
-  if (a == null && b == null) {
+  const nullableResult = compareNullable(a, b);
+  if (nullableResult != null) {
+    return nullableResult;
+  }
+
+  if (a == null || b == null) {
     return 0;
-  }
-
-  if (a == null) {
-    return 1;
-  }
-
-  if (b == null) {
-    return -1;
   }
 
   return a - b;
 }
 
-function compareStocks(a: StockRecord, b: StockRecord, sort: SortState) {
+function compareStocks(a: StockRecord, b: StockRecord, sort: NonNullable<SortState>) {
+  const aValue = a[sort.key] as number | string | null;
+  const bValue = b[sort.key] as number | string | null;
+  const nullableResult = compareNullable(aValue, bValue);
+  if (nullableResult != null) {
+    return nullableResult;
+  }
+
   const multiplier = sort.direction === "asc" ? 1 : -1;
   const result = numericSortKeys.has(sort.key)
     ? compareNumber(a[sort.key] as number | null, b[sort.key] as number | null)
@@ -164,8 +181,8 @@ function compareStocks(a: StockRecord, b: StockRecord, sort: SortState) {
 }
 
 function sortIndicator(sort: SortState, key: SortKey) {
-  if (sort.key !== key) {
-    return "↕";
+  if (!sort || sort.key !== key) {
+    return "•";
   }
 
   return sort.direction === "asc" ? "↑" : "↓";
@@ -173,10 +190,7 @@ function sortIndicator(sort: SortState, key: SortKey) {
 
 function App() {
   const [state, setState] = useState<LoadState>({ status: "loading" });
-  const [sort, setSort] = useState<SortState>({
-    key: "code",
-    direction: "asc",
-  });
+  const [sort, setSort] = useState<SortState>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -234,6 +248,10 @@ function App() {
       return [];
     }
 
+    if (!sort) {
+      return state.stocks;
+    }
+
     return state.stocks
       .map((stock, index) => ({ stock, index }))
       .sort((a, b) => {
@@ -244,16 +262,22 @@ function App() {
   }, [state, sort]);
 
   function toggleSort(key: SortKey) {
-    setSort((current) => ({
-      key,
-      direction:
-        current.key === key && current.direction === "asc" ? "desc" : "asc",
-    }));
+    setSort((current) => {
+      if (!current || current.key !== key) {
+        return { key, direction: "asc" };
+      }
+
+      if (current.direction === "asc") {
+        return { key, direction: "desc" };
+      }
+
+      return null;
+    });
   }
 
   function renderSortableHeader(key: SortKey, className?: string) {
     const direction =
-      sort.key === key
+      sort?.key === key
         ? sort.direction === "asc"
           ? "ascending"
           : "descending"
