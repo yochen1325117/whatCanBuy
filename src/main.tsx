@@ -31,11 +31,44 @@ type LoadState =
       dataDate: string | null;
     };
 
+type SortKey =
+  | "market"
+  | "code"
+  | "name"
+  | "close"
+  | "change"
+  | "changePercent"
+  | "volume";
+
+type SortDirection = "asc" | "desc";
+
+type SortState = {
+  key: SortKey;
+  direction: SortDirection;
+};
+
 const numberFormatter = new Intl.NumberFormat("zh-TW");
 const priceFormatter = new Intl.NumberFormat("zh-TW", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
+
+const sortLabels: Record<SortKey, string> = {
+  market: "市場",
+  code: "股票代號",
+  name: "股票名稱",
+  close: "收盤價",
+  change: "漲跌",
+  changePercent: "漲跌幅",
+  volume: "成交量",
+};
+
+const numericSortKeys = new Set<SortKey>([
+  "close",
+  "change",
+  "changePercent",
+  "volume",
+]);
 
 function formatNumber(value: number | null | undefined) {
   return value == null ? "-" : numberFormatter.format(value);
@@ -86,8 +119,64 @@ function changeClass(value: number | null | undefined) {
   return value > 0 ? "positive" : "negative";
 }
 
+function compareText(a: string | null, b: string | null) {
+  if (a == null && b == null) {
+    return 0;
+  }
+
+  if (a == null) {
+    return 1;
+  }
+
+  if (b == null) {
+    return -1;
+  }
+
+  return a.localeCompare(b, "zh-Hant", {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
+function compareNumber(a: number | null, b: number | null) {
+  if (a == null && b == null) {
+    return 0;
+  }
+
+  if (a == null) {
+    return 1;
+  }
+
+  if (b == null) {
+    return -1;
+  }
+
+  return a - b;
+}
+
+function compareStocks(a: StockRecord, b: StockRecord, sort: SortState) {
+  const multiplier = sort.direction === "asc" ? 1 : -1;
+  const result = numericSortKeys.has(sort.key)
+    ? compareNumber(a[sort.key] as number | null, b[sort.key] as number | null)
+    : compareText(a[sort.key] as string | null, b[sort.key] as string | null);
+
+  return result * multiplier;
+}
+
+function sortIndicator(sort: SortState, key: SortKey) {
+  if (sort.key !== key) {
+    return "↕";
+  }
+
+  return sort.direction === "asc" ? "↑" : "↓";
+}
+
 function App() {
   const [state, setState] = useState<LoadState>({ status: "loading" });
+  const [sort, setSort] = useState<SortState>({
+    key: "code",
+    direction: "asc",
+  });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -140,6 +229,52 @@ function App() {
     );
   }, [state]);
 
+  const sortedStocks = useMemo(() => {
+    if (state.status !== "ready") {
+      return [];
+    }
+
+    return state.stocks
+      .map((stock, index) => ({ stock, index }))
+      .sort((a, b) => {
+        const result = compareStocks(a.stock, b.stock, sort);
+        return result === 0 ? a.index - b.index : result;
+      })
+      .map(({ stock }) => stock);
+  }, [state, sort]);
+
+  function toggleSort(key: SortKey) {
+    setSort((current) => ({
+      key,
+      direction:
+        current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  }
+
+  function renderSortableHeader(key: SortKey, className?: string) {
+    const direction =
+      sort.key === key
+        ? sort.direction === "asc"
+          ? "ascending"
+          : "descending"
+        : "none";
+
+    return (
+      <th aria-sort={direction} className={className}>
+        <button
+          className="sort-button"
+          onClick={() => toggleSort(key)}
+          type="button"
+        >
+          <span>{sortLabels[key]}</span>
+          <span aria-hidden="true" className="sort-indicator">
+            {sortIndicator(sort, key)}
+          </span>
+        </button>
+      </th>
+    );
+  }
+
   return (
     <main className="page-shell">
       <section className="dashboard">
@@ -187,18 +322,18 @@ function App() {
                 <table>
                   <thead>
                     <tr>
-                      <th>市場</th>
-                      <th>股票代號</th>
-                      <th>股票名稱</th>
-                      <th className="numeric">收盤價</th>
-                      <th className="numeric">漲跌</th>
-                      <th className="numeric">漲跌幅</th>
-                      <th className="numeric">成交量</th>
+                      {renderSortableHeader("market")}
+                      {renderSortableHeader("code")}
+                      {renderSortableHeader("name")}
+                      {renderSortableHeader("close", "numeric")}
+                      {renderSortableHeader("change", "numeric")}
+                      {renderSortableHeader("changePercent", "numeric")}
+                      {renderSortableHeader("volume", "numeric")}
                       <th>日期</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {state.stocks.map((stock, index) => (
+                    {sortedStocks.map((stock, index) => (
                       <tr key={`${stock.market}-${stock.code}-${index}`}>
                         <td>{stock.market ?? "-"}</td>
                         <td className="code">{stock.code ?? "-"}</td>

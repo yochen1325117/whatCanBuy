@@ -164,6 +164,46 @@ th {
   font-weight: 700;
 }
 
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: 100%;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.numeric .sort-button {
+  justify-content: flex-end;
+}
+
+.sort-button:hover,
+.sort-button:focus-visible {
+  color: #1f5f49;
+}
+
+.sort-button:focus-visible {
+  outline: 2px solid #2c6e57;
+  outline-offset: 3px;
+}
+
+.sort-indicator {
+  display: inline-block;
+  width: 1em;
+  color: #6b7a74;
+  font-size: 0.78rem;
+  line-height: 1;
+  text-align: center;
+}
+
 tbody tr:hover {
   background: #f8faf9;
 }
