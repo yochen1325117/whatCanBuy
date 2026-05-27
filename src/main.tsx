@@ -47,6 +47,8 @@ type SortState = {
   direction: SortDirection;
 } | null;
 
+type ChangePercentFilterMode = "all" | "gte" | "lte";
+
 const numberFormatter = new Intl.NumberFormat("zh-TW");
 const priceFormatter = new Intl.NumberFormat("zh-TW", {
   minimumFractionDigits: 0,
@@ -117,6 +119,44 @@ function changeClass(value: number | null | undefined) {
   }
 
   return value > 0 ? "positive" : "negative";
+}
+
+function normalizeSearchText(value: string | null | undefined) {
+  return String(value ?? "").trim().toLocaleLowerCase("zh-TW");
+}
+
+function matchesQuery(stock: StockRecord, query: string) {
+  if (!query) {
+    return true;
+  }
+
+  return (
+    normalizeSearchText(stock.code).includes(query) ||
+    normalizeSearchText(stock.name).includes(query)
+  );
+}
+
+function matchesChangePercent(
+  stock: StockRecord,
+  mode: ChangePercentFilterMode,
+  thresholdText: string,
+) {
+  if (mode === "all") {
+    return true;
+  }
+
+  const threshold = Number.parseFloat(thresholdText);
+  if (Number.isNaN(threshold)) {
+    return true;
+  }
+
+  if (stock.changePercent == null) {
+    return false;
+  }
+
+  return mode === "gte"
+    ? stock.changePercent >= threshold
+    : stock.changePercent <= threshold;
 }
 
 function compareNullable(a: string | number | null, b: string | number | null) {
@@ -191,6 +231,10 @@ function sortIndicator(sort: SortState, key: SortKey) {
 function App() {
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [sort, setSort] = useState<SortState>(null);
+  const [query, setQuery] = useState("");
+  const [changePercentMode, setChangePercentMode] =
+    useState<ChangePercentFilterMode>("all");
+  const [changePercentThreshold, setChangePercentThreshold] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -229,19 +273,36 @@ function App() {
     return () => controller.abort();
   }, []);
 
+  const filteredStocks = useMemo(() => {
+    if (state.status !== "ready") {
+      return [];
+    }
+
+    const normalizedQuery = normalizeSearchText(query);
+    return state.stocks.filter(
+      (stock) =>
+        matchesQuery(stock, normalizedQuery) &&
+        matchesChangePercent(
+          stock,
+          changePercentMode,
+          changePercentThreshold,
+        ),
+    );
+  }, [state, query, changePercentMode, changePercentThreshold]);
+
   const marketCounts = useMemo(() => {
     if (state.status !== "ready") {
       return [];
     }
 
     return Object.entries(
-      state.stocks.reduce<Record<string, number>>((counts, stock) => {
+      filteredStocks.reduce<Record<string, number>>((counts, stock) => {
         const market = stock.market ?? "UNKNOWN";
         counts[market] = (counts[market] ?? 0) + 1;
         return counts;
       }, {}),
     );
-  }, [state]);
+  }, [state, filteredStocks]);
 
   const sortedStocks = useMemo(() => {
     if (state.status !== "ready") {
@@ -249,17 +310,27 @@ function App() {
     }
 
     if (!sort) {
-      return state.stocks;
+      return filteredStocks;
     }
 
-    return state.stocks
+    return filteredStocks
       .map((stock, index) => ({ stock, index }))
       .sort((a, b) => {
         const result = compareStocks(a.stock, b.stock, sort);
         return result === 0 ? a.index - b.index : result;
       })
       .map(({ stock }) => stock);
-  }, [state, sort]);
+  }, [state, filteredStocks, sort]);
+
+  const hasActiveFilters =
+    query.trim() !== "" ||
+    (changePercentMode !== "all" && changePercentThreshold.trim() !== "");
+
+  function resetFilters() {
+    setQuery("");
+    setChangePercentMode("all");
+    setChangePercentThreshold("");
+  }
 
   function toggleSort(key: SortKey) {
     setSort((current) => {
@@ -309,7 +380,10 @@ function App() {
           </div>
           {state.status === "ready" ? (
             <div className="header-meta" aria-label="資料摘要">
-              <span>{formatNumber(state.stocks.length)} 檔證券</span>
+              <span>
+                {formatNumber(sortedStocks.length)} /{" "}
+                {formatNumber(state.stocks.length)} 檔證券
+              </span>
               <span>最後更新時間：{formatDateTime(state.updatedAt)}</span>
               <span>資料日期：{state.dataDate ?? "-"}</span>
             </div>
@@ -341,6 +415,57 @@ function App() {
               ))}
             </section>
 
+            <section className="filter-bar" aria-label="篩選股票">
+              <label className="filter-field">
+                <span>搜尋</span>
+                <input
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="代號或名稱"
+                  type="search"
+                  value={query}
+                />
+              </label>
+
+              <label className="filter-field compact">
+                <span>漲跌幅</span>
+                <select
+                  onChange={(event) =>
+                    setChangePercentMode(
+                      event.target.value as ChangePercentFilterMode,
+                    )
+                  }
+                  value={changePercentMode}
+                >
+                  <option value="all">全部</option>
+                  <option value="gte">大於等於</option>
+                  <option value="lte">小於等於</option>
+                </select>
+              </label>
+
+              <label className="filter-field compact">
+                <span>百分比</span>
+                <input
+                  disabled={changePercentMode === "all"}
+                  inputMode="decimal"
+                  onChange={(event) =>
+                    setChangePercentThreshold(event.target.value)
+                  }
+                  placeholder="+5 或 -5"
+                  type="number"
+                  value={changePercentThreshold}
+                />
+              </label>
+
+              <button
+                className="reset-button"
+                disabled={!hasActiveFilters}
+                onClick={resetFilters}
+                type="button"
+              >
+                重設
+              </button>
+            </section>
+
             <section className="table-panel" aria-label="股票表格">
               <div className="table-scroll">
                 <table>
@@ -357,24 +482,32 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedStocks.map((stock, index) => (
-                      <tr key={`${stock.market}-${stock.code}-${index}`}>
-                        <td>{stock.market ?? "-"}</td>
-                        <td className="code">{stock.code ?? "-"}</td>
-                        <td>{stock.name ?? "-"}</td>
-                        <td className="numeric">{formatPrice(stock.close)}</td>
-                        <td className={`numeric ${changeClass(stock.change)}`}>
-                          {formatChange(stock.change)}
+                    {sortedStocks.length > 0 ? (
+                      sortedStocks.map((stock, index) => (
+                        <tr key={`${stock.market}-${stock.code}-${index}`}>
+                          <td>{stock.market ?? "-"}</td>
+                          <td className="code">{stock.code ?? "-"}</td>
+                          <td>{stock.name ?? "-"}</td>
+                          <td className="numeric">{formatPrice(stock.close)}</td>
+                          <td className={`numeric ${changeClass(stock.change)}`}>
+                            {formatChange(stock.change)}
+                          </td>
+                          <td
+                            className={`numeric ${changeClass(stock.changePercent)}`}
+                          >
+                            {formatPercent(stock.changePercent)}
+                          </td>
+                          <td className="numeric">{formatNumber(stock.volume)}</td>
+                          <td>{stock.date ?? "-"}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="empty-cell" colSpan={8}>
+                          沒有符合條件的資料
                         </td>
-                        <td
-                          className={`numeric ${changeClass(stock.changePercent)}`}
-                        >
-                          {formatPercent(stock.changePercent)}
-                        </td>
-                        <td className="numeric">{formatNumber(stock.volume)}</td>
-                        <td>{stock.date ?? "-"}</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

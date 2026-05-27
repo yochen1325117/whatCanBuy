@@ -69,6 +69,68 @@ h1 {
   margin-bottom: 18px;
 }
 
+.filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, 180px) minmax(120px, 160px) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.filter-field {
+  display: grid;
+  gap: 6px;
+}
+
+.filter-field span {
+  color: #52615b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.filter-field input,
+.filter-field select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cfd9d4;
+  border-radius: 8px;
+  color: #1d2522;
+  background: #ffffff;
+  font: inherit;
+}
+
+.filter-field input:disabled {
+  color: #8b9893;
+  background: #eef2f0;
+}
+
+.filter-field input:focus,
+.filter-field select:focus,
+.reset-button:focus-visible {
+  border-color: #2c6e57;
+  outline: 2px solid rgba(44, 110, 87, 0.22);
+  outline-offset: 2px;
+}
+
+.reset-button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #cfd9d4;
+  border-radius: 8px;
+  color: #223b33;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reset-button:disabled {
+  color: #93a09b;
+  cursor: not-allowed;
+  background: #eef2f0;
+}
+
 .summary-item,
 .state-panel,
 .table-panel {
@@ -231,6 +293,12 @@ tbody tr:hover {
   color: #66736e;
 }
 
+.empty-cell {
+  height: 120px;
+  color: #66736e;
+  text-align: center;
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -256,6 +324,10 @@ tbody tr:hover {
 
   .header-meta {
     justify-content: flex-start;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr;
   }
 
   .table-scroll {
