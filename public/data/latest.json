@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-21T09:24:32.118962+00:00",
-  "updatedAt": "2026-07-21T17:24:32.118948+08:00",
+  "generatedAt": "2026-07-21T23:48:21.317011+00:00",
+  "updatedAt": "2026-07-22T07:48:21.316993+08:00",
   "dataDate": "2026-07-21",
   "sources": {
     "TWSE": "https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX",
@@ -3209,7 +3209,7 @@
       "close": 19.0,
       "change": 0.45,
       "changePercent": 2.43,
-      "volume": 6974307,
+      "volume": 8451307,
       "date": "2026-07-21"
     },
     {
@@ -3229,7 +3229,7 @@
       "close": 44.75,
       "change": 0.2,
       "changePercent": 0.45,
-      "volume": 851027,
+      "volume": 3551027,
       "date": "2026-07-21"
     },
     {
@@ -4799,7 +4799,7 @@
       "close": 20.75,
       "change": 0.15,
       "changePercent": 0.73,
-      "volume": 194138,
+      "volume": 266138,
       "date": "2026-07-21"
     },
     {
@@ -5259,7 +5259,7 @@
       "close": 1835.0,
       "change": 130.0,
       "changePercent": 7.62,
-      "volume": 10598972,
+      "volume": 11082972,
       "date": "2026-07-21"
     },
     {
@@ -5309,7 +5309,7 @@
       "close": 246.0,
       "change": 11.5,
       "changePercent": 4.9,
-      "volume": 51401036,
+      "volume": 51471036,
       "date": "2026-07-21"
     },
     {
@@ -5349,7 +5349,7 @@
       "close": 670.0,
       "change": 40.0,
       "changePercent": 6.35,
-      "volume": 94802249,
+      "volume": 96163970,
       "date": "2026-07-21"
     },
     {
@@ -5379,7 +5379,7 @@
       "close": 2410.0,
       "change": 90.0,
       "changePercent": 3.88,
-      "volume": 31391663,
+      "volume": 31605663,
       "date": "2026-07-21"
     },
     {
@@ -5449,7 +5449,7 @@
       "close": 155.5,
       "change": 4.5,
       "changePercent": 2.98,
-      "volume": 104216854,
+      "volume": 104783854,
       "date": "2026-07-21"
     },
     {
@@ -5459,7 +5459,7 @@
       "close": 2220.0,
       "change": 130.0,
       "changePercent": 6.22,
-      "volume": 1912779,
+      "volume": 2272779,
       "date": "2026-07-21"
     },
     {
@@ -5589,7 +5589,7 @@
       "close": 2015.0,
       "change": 180.0,
       "changePercent": 9.81,
-      "volume": 3372378,
+      "volume": 3471378,
       "date": "2026-07-21"
     },
     {
@@ -5759,7 +5759,7 @@
       "close": 4830.0,
       "change": 435.0,
       "changePercent": 9.9,
-      "volume": 2232253,
+      "volume": 2947253,
       "date": "2026-07-21"
     },
     {
@@ -5879,7 +5879,7 @@
       "close": 1150.0,
       "change": 15.0,
       "changePercent": 1.32,
-      "volume": 1972866,
+      "volume": 2161866,
       "date": "2026-07-21"
     },
     {
@@ -5909,7 +5909,7 @@
       "close": 405.0,
       "change": 24.0,
       "changePercent": 6.3,
-      "volume": 69432915,
+      "volume": 70570915,
       "date": "2026-07-21"
     },
     {
@@ -5999,7 +5999,7 @@
       "close": 128.5,
       "change": 3.0,
       "changePercent": 2.39,
-      "volume": 1325031,
+      "volume": 1814031,
       "date": "2026-07-21"
     },
     {
@@ -6109,7 +6109,7 @@
       "close": 41.95,
       "change": 0.05,
       "changePercent": 0.12,
-      "volume": 44055,
+      "volume": 74055,
       "date": "2026-07-21"
     },
     {
@@ -6199,7 +6199,7 @@
       "close": 279.0,
       "change": 8.5,
       "changePercent": 3.14,
-      "volume": 13526413,
+      "volume": 13598413,
       "date": "2026-07-21"
     },
     {
@@ -6879,7 +6879,7 @@
       "close": 203.0,
       "change": 7.0,
       "changePercent": 3.57,
-      "volume": 17741764,
+      "volume": 19176764,
       "date": "2026-07-21"
     },
     {
@@ -6989,7 +6989,7 @@
       "close": 85.2,
       "change": 4.7,
       "changePercent": 5.84,
-      "volume": 26087248,
+      "volume": 26374248,
       "date": "2026-07-21"
     },
     {
@@ -7339,7 +7339,7 @@
       "close": 20.5,
       "change": 0.1,
       "changePercent": 0.49,
-      "volume": 1686170,
+      "volume": 3086170,
       "date": "2026-07-21"
     },
     {
@@ -7439,7 +7439,7 @@
       "close": 123.5,
       "change": 0.0,
       "changePercent": 0.0,
-      "volume": 16918297,
+      "volume": 17394297,
       "date": "2026-07-21"
     },
     {
@@ -7479,7 +7479,7 @@
       "close": 95.8,
       "change": 1.8,
       "changePercent": 1.91,
-      "volume": 21431261,
+      "volume": 21831261,
       "date": "2026-07-21"
     },
     {
@@ -7509,7 +7509,7 @@
       "close": 29.7,
       "change": 0.15,
       "changePercent": 0.51,
-      "volume": 39055983,
+      "volume": 40555983,
       "date": "2026-07-21"
     },
     {
@@ -7539,7 +7539,7 @@
       "close": 61.3,
       "change": 0.0,
       "changePercent": 0.0,
-      "volume": 67091441,
+      "volume": 67691441,
       "date": "2026-07-21"
     },
     {
@@ -7649,7 +7649,7 @@
       "close": 62.7,
       "change": 1.2,
       "changePercent": 1.95,
-      "volume": 49568669,
+      "volume": 50351669,
       "date": "2026-07-21"
     },
     {
@@ -7809,7 +7809,7 @@
       "close": 52.0,
       "change": 0.9,
       "changePercent": 1.76,
-      "volume": 3637869,
+      "volume": 3834869,
       "date": "2026-07-21"
     },
     {
@@ -7979,7 +7979,7 @@
       "close": 2320.0,
       "change": 185.0,
       "changePercent": 8.67,
-      "volume": 3687446,
+      "volume": 3736446,
       "date": "2026-07-21"
     },
     {
@@ -8169,7 +8169,7 @@
       "close": 825.0,
       "change": 75.0,
       "changePercent": 10.0,
-      "volume": 17941207,
+      "volume": 18816207,
       "date": "2026-07-21"
     },
     {
@@ -8859,7 +8859,7 @@
       "close": 2030.0,
       "change": 125.0,
       "changePercent": 6.56,
-      "volume": 702085,
+      "volume": 711085,
       "date": "2026-07-21"
     },
     {
@@ -9069,7 +9069,7 @@
       "close": 3490.0,
       "change": 125.0,
       "changePercent": 3.71,
-      "volume": 1391143,
+      "volume": 1468143,
       "date": "2026-07-21"
     },
     {
@@ -9209,7 +9209,7 @@
       "close": 633.0,
       "change": 36.0,
       "changePercent": 6.03,
-      "volume": 15540369,
+      "volume": 15573369,
       "date": "2026-07-21"
     },
     {
@@ -11409,7 +11409,7 @@
       "close": 32.55,
       "change": 0.65,
       "changePercent": 2.04,
-      "volume": 58905,
+      "volume": 134905,
       "date": "2026-07-21"
     },
     {
@@ -13099,7 +13099,7 @@
       "close": 363.0,
       "change": 3.0,
       "changePercent": 0.83,
-      "volume": 154129,
+      "volume": 274129,
       "date": "2026-07-21"
     },
     {
@@ -13369,7 +13369,7 @@
       "close": 20.6,
       "change": 0.0,
       "changePercent": 0.0,
-      "volume": 60528,
+      "volume": 545528,
       "date": "2026-07-21"
     },
     {
