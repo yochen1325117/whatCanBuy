@@ -1,10 +1,7 @@
 name: Deploy dashboard to GitHub Pages
 
-on:
-  workflow_run:
-    workflows: ["Update stock data"]
-    types: [completed]
-  workflow_dispatch:
+# Temporarily disabled: no workflow-run or manual triggers.
+on: []
 
 permissions:
   contents: read
